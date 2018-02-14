@@ -19,3 +19,7 @@ CnBlogSubscribeTool can crawl blog home page data at regular intervals.
 ## Email
 
 9 o'clock every day will send yesterday's blogs
+
+## Data
+
+Get the data once every five minutes
