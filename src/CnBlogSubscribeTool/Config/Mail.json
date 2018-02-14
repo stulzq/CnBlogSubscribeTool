@@ -1,0 +1,8 @@
+﻿{
+  "Name": "CnBlogSubscribeTool",
+  "Address": "",
+  "Host": "",
+  "Port": 25,
+  "Password": "",
+  "ReceiveList": [] 
+}

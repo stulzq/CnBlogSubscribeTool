@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.6.17" />
+    <PackageReference Include="MailKit" Version="2.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="Polly" Version="5.8.0" />
     <PackageReference Include="NLog" Version="4.5.0-rc04" />
@@ -14,7 +15,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="NLog.Config">
+    <None Update="Config\Mail.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\NLog.Config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="start.bat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
