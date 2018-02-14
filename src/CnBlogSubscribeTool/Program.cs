@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using HtmlAgilityPack;
+using Newtonsoft.Json;
 using NLog;
 using NLog.Config;
 using Polly;
@@ -21,6 +22,8 @@ namespace CnBlogSubscribeTool
         private static readonly Stopwatch Sw = new Stopwatch();
         private static readonly List<Blog> PreviousBlogs = new List<Blog>();
         private static Logger _logger;
+        private static Logger _sendLogger;
+        private static string _baseDir;
         private static RetryPolicy _retryTwoTimesPolicy;
         static void Main(string[] args)
         {
@@ -36,6 +39,7 @@ namespace CnBlogSubscribeTool
 
         static void Init()
         {
+            //初始化重试器
             _retryTwoTimesPolicy =
                 Policy
                     .Handle<Exception>()
@@ -45,11 +49,33 @@ namespace CnBlogSubscribeTool
                         _logger.Error("Exeption from {0}", ex.GetType().Name);
                     });
 
-            dynamic type = (new Program()).GetType();
-            string currentDirectory = Path.GetDirectoryName(type.Assembly.Location);
+            //获取应用程序所在目录
+            Type type = (new Program()).GetType();
+            _baseDir = Path.GetDirectoryName(type.Assembly.Location);
 
-            LogManager.Configuration = new XmlLoggingConfiguration(Path.Combine(currentDirectory, "NLog.Config"));
+            //初始化日志
+            LogManager.Configuration = new XmlLoggingConfiguration(Path.Combine(_baseDir, "NLog.Config"));
             _logger = LogManager.GetLogger("CnBlogSubscribeTool");
+            _sendLogger = LogManager.GetLogger("MailSend");
+
+            //加载最后一次成功获取数据缓存
+            if (File.Exists(Path.Combine(_baseDir, "Blogs", "cnblogs.tmp")))
+            {
+                try
+                {
+                    var data = File.ReadAllText(Path.Combine(_baseDir, "Blogs", "cnblogs.tmp"));
+                    var res = JsonConvert.DeserializeObject<List<Blog>>(data);
+                    if (res != null)
+                    {
+                        PreviousBlogs.AddRange(res);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("缓存数据加载失败，本次将弃用！详情:" + e.Message);
+                    File.Delete(Path.Combine(_baseDir, "Blogs", "cnblogs.tmp"));
+                }
+            }
         }
 
         static void WorkStart()
@@ -136,9 +162,14 @@ namespace CnBlogSubscribeTool
                     Console.WriteLine("--------------华丽的分割线---------------");*/
                 }
 
-                //去重
-                FileStream fs=new FileStream($"cnblogs{DateTime.Now:yyyy-MM-dd}.txt",FileMode.Append,FileAccess.Write);
+                if (!Directory.Exists(Path.Combine(_baseDir,"Blogs")))
+                {
+                    Directory.CreateDirectory(Path.Combine(_baseDir, "Blogs"));
+                }
+                FileStream fs=new FileStream(Path.Combine(_baseDir, "Blogs", $"cnblogs{DateTime.Now:yyyy-MM-dd}.txt"),FileMode.Append,FileAccess.Write);
+
                 StreamWriter sw=new StreamWriter(fs,Encoding.UTF8);
+                //去重
                 foreach (var blog in blogs)
                 {
                     if (PreviousBlogs.Any(b => b.Url == blog.Url))
@@ -163,6 +194,9 @@ namespace CnBlogSubscribeTool
                 PreviousBlogs.Clear();
                 //加入本次抓取记录
                 PreviousBlogs.AddRange(blogs);
+
+                //持久化本次抓取数据到文本 以便于异常退出恢复之后不出现重复数据
+                File.WriteAllText(Path.Combine(_baseDir, "Blogs", "cnblogs.tmp"),JsonConvert.SerializeObject(blogs));
 
                 Sw.Stop();
 
