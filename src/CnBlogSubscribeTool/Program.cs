@@ -66,7 +66,7 @@ namespace CnBlogSubscribeTool
             }
 
             //初始化记录时间
-            _recordTime=new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 9,0,0);
+            _recordTime=new DateTime(DateTime.Now.Year, DateTime.Now.Month, 13, 9,0,0);
 
 
             //初始化日志
@@ -135,12 +135,12 @@ namespace CnBlogSubscribeTool
                 //重复数量统计
                 int repeatCount = 0;
 
-                string res = HttpUtil.GetString(BlogDataUrl);
+                string html = HttpUtil.GetString(BlogDataUrl);
 
                 List<Blog> blogs = new List<Blog>();
 
                 HtmlDocument doc = new HtmlDocument();
-                doc.LoadHtml(res);
+                doc.LoadHtml(html);
 
                 //获取所有文章数据项
                 var itemBodys = doc.DocumentNode.SelectNodes("//div[@class='post_item_body']");
@@ -246,6 +246,9 @@ namespace CnBlogSubscribeTool
             }
         }
 
+        /// <summary>
+        /// 发送邮件
+        /// </summary>
         static void SendMail()
         {
             string blogFileName = $"cnblogs-{_recordTime:yyyy-MM-dd}.txt";

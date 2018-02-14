@@ -5,6 +5,9 @@ using MimeKit;
 
 namespace CnBlogSubscribeTool
 {
+    /// <summary>
+    /// send email
+    /// </summary>
     public class MailUtil
     {
         private static bool SendMail(MimeMessage mailMessage,MailConfig config)

@@ -4,5 +4,8 @@
   "Host": "",
   "Port": 25,
   "Password": "",
-  "ReceiveList": [] 
+  "ReceiveList": [
+    "test1@test.com",
+    "test2@test.com"
+  ]
 }
