@@ -12,7 +12,10 @@ CnBlogSubscribeTool can crawl blog home page data at regular intervals.
   "Host": "",
   "Port": 25,
   "Password": "",
-  "ReceiveList": [] 
+  "ReceiveList": [
+    "test1@test.com",
+    "test2@test.com",
+  ] 
 }
 ````
 
