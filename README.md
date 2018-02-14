@@ -15,3 +15,7 @@ CnBlogSubscribeTool can crawl blog home page data at regular intervals.
   "ReceiveList": [] 
 }
 ````
+
+## Email
+
+9 o'clock every day will send yesterday's blogs
