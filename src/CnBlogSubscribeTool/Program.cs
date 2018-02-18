@@ -66,7 +66,7 @@ namespace CnBlogSubscribeTool
             }
 
             //初始化记录时间
-            _recordTime=new DateTime(DateTime.Now.Year, DateTime.Now.Month, 13, 9,0,0);
+            _recordTime=new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 9,0,0);
 
 
             //初始化日志
